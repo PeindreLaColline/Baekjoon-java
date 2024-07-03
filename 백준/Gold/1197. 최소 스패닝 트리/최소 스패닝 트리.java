@@ -1,71 +1,67 @@
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class Main {
-	static class Edge{
-		int from;
-		int to;
-		int weight;
-		
-		public Edge(int from, int to, int weight) {
-            this.from = from;
-            this.to = to;
-            this.weight = weight;
-        }
-	}
-	
 	static int v, e;
-	static Edge[] edge;
-	static int[] parent;
+	static boolean[] visited;
+	static int[] w;
+	static List<int[]>[] g;
 	
-	static void make() {
-		parent = new int[v+1];
-		for(int i =1; i<=v; i++) {
-			parent[i] =i;
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st;
+		
+		st = new StringTokenizer(br.readLine());
+		v = Integer.parseInt(st.nextToken());
+		e = Integer.parseInt(st.nextToken());
+		
+		//init
+		visited = new boolean[v+1];
+		w = new int[v+1];
+		for(int i =0; i<=v; i++) w[i] = Integer.MAX_VALUE;
+		g = new List[v+1];
+		for(int i =0; i<=v; i++) {
+			g[i] = new ArrayList<>();
 		}
-	}
-	
-	static int find(int a) {
-		if(parent[a] == a) return a;
-		return parent[a] = find(parent[a]);
-	}
-	
-	static boolean union(int a, int b) {
-		int ar = find(a);
-		int br = find(b);
-		if(ar==br) return false;
-		parent[br] = ar;
-		return true;
-	}
-	
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
 		
-		v=sc.nextInt();
-		e=sc.nextInt();
-		
-		make();
-		edge = new Edge[e];
-		
-		int from, to, weight;
+		//input
+		int a, b, c;
 		for(int i =0; i<e; i++) {
-			 from = sc.nextInt();
-	         to = sc.nextInt();
-	         weight = sc.nextInt();
-	         edge[i] = new Edge(from, to, weight);
+			st = new StringTokenizer(br.readLine());
+			a = Integer.parseInt(st.nextToken());
+			b = Integer.parseInt(st.nextToken());
+			c = Integer.parseInt(st.nextToken());
+			g[a].add(new int[] {b, c});
+			g[b].add(new int[] {a, c});
 		}
-		Arrays.sort(edge, Comparator.comparingInt(ed -> ed.weight));
 		
-		int sum = 0, cnt=0;
-		for(Edge e:edge) {
-			if(union(e.from, e.to)) {
-				sum+=e.weight;
-				if(++cnt ==v-1) break;
+		//process
+		int sum =0, cnt=0;
+		w[1] = 0;
+		for(int i=1; i<=v; i++) {
+			int min = Integer.MAX_VALUE;
+			int minVertex=-1;
+			for(int j =1; j<=v; j++) {
+				if(!visited[j] && min>w[j]) {
+					min =w[j];
+					minVertex=j;
+				}
+			}
+			visited[minVertex] = true;
+			sum += min;
+			if(cnt++==v) break;
+			
+			for(int[] j: g[minVertex]) {
+				if(!visited[j[0]] && w[j[0]]>j[1]) {
+					w[j[0]] = j[1];
+				}
 			}
 		}
-		
 		System.out.println(sum);
-		sc.close();
+		br.close();
 	}
 }
