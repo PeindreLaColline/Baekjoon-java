@@ -29,17 +29,13 @@ public class Main {
 		//process
 		int[] dp = new int[101];
 		for(int i =0; i<n; i++) {
-			for(int l=100; l>0; l--) {
+			for(int l=99; l>0; l--) {
 				if(loss[i]<=l) {
 					dp[l] = Math.max(dp[l], bene[i]+dp[l-loss[i]]);
-				}
-				else {
-					dp[l] = dp[l];
 				}
 			}
 		}
 		System.out.println(dp[99]);
 		br.close();
-		
 	}
 }
